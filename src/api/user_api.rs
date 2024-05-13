@@ -3,6 +3,8 @@ use crate::repository::mongodb_repo::MongoRepo;
 
 use actix_web::{post, get, web::{Data, Json, Path}, HttpResponse, put, delete};
 use mongodb::bson::oid::ObjectId;
+// role based
+// use actix_web_grants::protect;
 
 #[post("/user")]
 pub async fn create_user(db: Data<MongoRepo>, new_user: Json<User>) -> HttpResponse {
@@ -16,7 +18,7 @@ pub async fn create_user(db: Data<MongoRepo>, new_user: Json<User>) -> HttpRespo
     println!("Creating user with : {:#?}", data);
 
     let user_details = db.create_user(data).await;
-    
+
     match user_details {
         Ok(user) => HttpResponse::Ok().json(user),
         Err(err) => HttpResponse::InternalServerError().body(err.to_string())
@@ -93,6 +95,8 @@ pub async fn delete_user(db: Data<MongoRepo>, path: Path<String>) -> HttpRespons
 }
 
 #[get("/users")]
+// role based
+// #[protect("CAN_CREATE_USER")]
 pub async fn get_all(db: Data<MongoRepo>) -> HttpResponse {
     let all_users = db.get_all().await;
 
